@@ -1,0 +1,11 @@
+{
+    "id": "obsidian-yuhanbo-python",
+    "name": "yuhanbo-python",
+    "version": "1.0.0",
+    "minAppVersion": "0.15.0",
+    "description": "在 Obsidian 中运行 Python 代码，微信公众号：余汉波",
+    "author": "余汉波",
+    "isDesktopOnly": true,
+    "js": "main.js",
+    "css": "styles.css"
+} 

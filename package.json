@@ -1,0 +1,17 @@
+{
+  "name": "obsidian-python-runner",
+  "version": "1.0.0",
+  "description": "在 Obsidian 中运行 Python 代码",
+  "main": "main.js",
+  "scripts": {
+    "dev": "node esbuild.config.mjs",
+    "build": "node esbuild.config.mjs production"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "obsidian": "^0.12.0",
+    "esbuild": "0.13.12"
+  }
+} 

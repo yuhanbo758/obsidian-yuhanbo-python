@@ -1,0 +1,149 @@
+.python-code-wrapper {
+    position: relative;
+    background-color: #f5f5f5;
+    border-radius: 4px;
+    padding: 10px;
+    margin: 10px 0;
+}
+
+.python-code-wrapper pre {
+    margin: 0;
+    background-color: #f5f5f5;
+}
+
+.python-code-wrapper code {
+    display: block;
+    overflow-x: auto;
+    background-color: #f5f5f5;
+    padding: 10px;
+    font-family: monospace;
+}
+
+.python-run-button {
+    position: absolute;
+    bottom: 0.5em;
+    right: 0.5em;
+    padding: 4px 8px;
+    border-radius: 4px;
+    background-color: var(--interactive-accent);
+    color: var(--text-on-accent);
+    cursor: pointer;
+    border: none;
+}
+
+.python-runner-modal {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: var(--background-primary);
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+    z-index: 1000;
+    min-width: 400px;
+    max-width: 800px;
+}
+
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 999;
+}
+
+.modal-content {
+    padding: 1em;
+}
+
+.modal-title-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5em;
+    border-bottom: 1px solid var(--background-modifier-border);
+}
+
+.modal-close-button {
+    background: none;
+    border: none;
+    font-size: 1.5em;
+    cursor: pointer;
+    color: var(--text-muted);
+}
+
+.python-output {
+    margin: 1em 0;
+    padding: 1em;
+    background-color: var(--background-secondary);
+    border-radius: 4px;
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.modal-button-group {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.modal-button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 4px 8px;
+    color: var(--text-muted);
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+.modal-button:hover {
+    background-color: var(--background-modifier-hover);
+}
+
+.modal-close-button {
+    font-size: 1.5em;
+    padding: 0 4px;
+}
+
+.modal-close-button {
+    color: var(--text-muted);
+}
+
+.python-runner-modal .python-output {
+    background-color: #f5f5f5;
+    border-radius: 4px;
+    padding: 10px;
+    margin: 10px 0;
+}
+
+.python-runner-modal .python-output code {
+    background-color: #f5f5f5;
+    display: block;
+    white-space: pre-wrap;
+    font-family: monospace;
+}
+
+/* 编辑模式下的代码块样式 */
+.markdown-source-view.mod-cm6 .cm-line.cm-foldable {
+    margin-top: 8px;
+    margin-bottom: 8px;
+    background-color: #f5f5f5;
+    border-radius: 4px;
+    padding: 4px 8px;
+}
+
+/* 代码块的语言标识样式 */
+.markdown-source-view.mod-cm6 .cm-line .cm-formatting-code-block {
+    color: var(--text-muted);
+    background-color: #f5f5f5;
+    padding: 2px 4px;
+    border-radius: 4px;
+}
+
+/* 代码块内容样式 */
+.markdown-source-view.mod-cm6 .cm-line.cm-foldable .cm-inline-code {
+    background-color: #f5f5f5;
+} 
