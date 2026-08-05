@@ -1,149 +1,42 @@
-.python-code-wrapper {
+.yuhanbo-python-runner-code {
     position: relative;
-    background-color: #f5f5f5;
-    border-radius: 4px;
-    padding: 10px;
-    margin: 10px 0;
+    margin-block: var(--size-4-3);
+    padding: var(--size-4-3);
+    border: 1px solid var(--background-modifier-border);
+    border-radius: var(--radius-m);
+    background: var(--background-secondary);
 }
 
-.python-code-wrapper pre {
+.yuhanbo-python-runner-code pre {
     margin: 0;
-    background-color: #f5f5f5;
-}
-
-.python-code-wrapper code {
-    display: block;
+    padding-block-end: var(--size-4-6);
     overflow-x: auto;
-    background-color: #f5f5f5;
-    padding: 10px;
-    font-family: monospace;
 }
 
-.python-run-button {
+.yuhanbo-python-runner-code__run {
     position: absolute;
-    bottom: 0.5em;
-    right: 0.5em;
-    padding: 4px 8px;
-    border-radius: 4px;
-    background-color: var(--interactive-accent);
-    color: var(--text-on-accent);
-    cursor: pointer;
-    border: none;
+    right: var(--size-4-2);
+    bottom: var(--size-4-2);
 }
 
-.python-runner-modal {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background-color: var(--background-primary);
-    border-radius: 8px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
-    z-index: 1000;
-    min-width: 400px;
-    max-width: 800px;
-}
-
-.modal-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: rgba(0, 0, 0, 0.5);
-    z-index: 999;
-}
-
-.modal-content {
-    padding: 1em;
-}
-
-.modal-title-bar {
+.yuhanbo-python-runner-modal__header {
     display: flex;
+    gap: var(--size-4-3);
+    align-items: center;
     justify-content: space-between;
-    align-items: center;
-    padding: 0.5em;
-    border-bottom: 1px solid var(--background-modifier-border);
 }
 
-.modal-close-button {
-    background: none;
-    border: none;
-    font-size: 1.5em;
-    cursor: pointer;
-    color: var(--text-muted);
+.yuhanbo-python-runner-modal__header h2 {
+    margin: 0;
 }
 
-.python-output {
-    margin: 1em 0;
-    padding: 1em;
-    background-color: var(--background-secondary);
-    border-radius: 4px;
-    max-height: 400px;
-    overflow-y: auto;
-}
-
-.modal-button-group {
-    display: flex;
-    gap: 8px;
-    align-items: center;
-}
-
-.modal-button {
-    background: none;
-    border: none;
-    cursor: pointer;
-    padding: 4px 8px;
-    color: var(--text-muted);
-    border-radius: 4px;
-    font-size: 14px;
-}
-
-.modal-button:hover {
-    background-color: var(--background-modifier-hover);
-}
-
-.modal-close-button {
-    font-size: 1.5em;
-    padding: 0 4px;
-}
-
-.modal-close-button {
-    color: var(--text-muted);
-}
-
-.python-runner-modal .python-output {
-    background-color: #f5f5f5;
-    border-radius: 4px;
-    padding: 10px;
-    margin: 10px 0;
-}
-
-.python-runner-modal .python-output code {
-    background-color: #f5f5f5;
-    display: block;
+.yuhanbo-python-runner-output {
+    max-height: 60vh;
+    margin-block-start: var(--size-4-4);
+    padding: var(--size-4-3);
+    overflow: auto;
+    border-radius: var(--radius-s);
+    background: var(--background-secondary);
     white-space: pre-wrap;
-    font-family: monospace;
+    overflow-wrap: anywhere;
 }
-
-/* 编辑模式下的代码块样式 */
-.markdown-source-view.mod-cm6 .cm-line.cm-foldable {
-    margin-top: 8px;
-    margin-bottom: 8px;
-    background-color: #f5f5f5;
-    border-radius: 4px;
-    padding: 4px 8px;
-}
-
-/* 代码块的语言标识样式 */
-.markdown-source-view.mod-cm6 .cm-line .cm-formatting-code-block {
-    color: var(--text-muted);
-    background-color: #f5f5f5;
-    padding: 2px 4px;
-    border-radius: 4px;
-}
-
-/* 代码块内容样式 */
-.markdown-source-view.mod-cm6 .cm-line.cm-foldable .cm-inline-code {
-    background-color: #f5f5f5;
-} 

@@ -1,199 +1,138 @@
-const { Plugin, PluginSettingTab, Setting } = require('obsidian');
+const { Modal, Notice, Plugin, PluginSettingTab, Setting } = require('obsidian');
+const { execFile } = require('node:child_process');
+const { promises: fs } = require('node:fs');
+const os = require('node:os');
+const path = require('node:path');
+const { promisify } = require('node:util');
 
-class ExecWindow {
-    constructor(app) {
-        this.app = app;
-        this.content = '';
-        this.modal = document.createElement('div');
-        this.modal.className = 'modal python-runner-modal';
-        
-        this.contentEl = document.createElement('div');
-        this.contentEl.className = 'modal-content';
-        this.modal.appendChild(this.contentEl);
-        
-        this.overlay = document.createElement('div');
-        this.overlay.className = 'modal-overlay';
-    }
-
-    open() {
-        document.body.appendChild(this.overlay);
-        document.body.appendChild(this.modal);
-        this.onOpen();
-    }
-
-    close() {
-        this.modal.remove();
-        this.overlay.remove();
-    }
-
-    onOpen() {
-        this.contentEl.empty();
-        
-        const titleBar = document.createElement('div');
-        titleBar.className = 'modal-title-bar';
-        
-        const title = document.createElement('h3');
-        title.textContent = 'Python 执行结果';
-        titleBar.appendChild(title);
-        
-        const buttonGroup = document.createElement('div');
-        buttonGroup.className = 'modal-button-group';
-        
-        const copyButton = document.createElement('button');
-        copyButton.className = 'modal-button';
-        copyButton.innerHTML = '复制';
-        copyButton.onclick = () => {
-            navigator.clipboard.writeText(this.content)
-                .then(() => {
-                    const originalText = copyButton.innerHTML;
-                    copyButton.innerHTML = '已复制!';
-                    setTimeout(() => {
-                        copyButton.innerHTML = originalText;
-                    }, 2000);
-                })
-                .catch(err => {
-                    console.error('复制失败:', err);
-                });
-        };
-        
-        const closeButton = document.createElement('button');
-        closeButton.className = 'modal-button modal-close-button';
-        closeButton.innerHTML = '';
-        closeButton.onclick = () => this.close();
-        
-        buttonGroup.appendChild(copyButton);
-        buttonGroup.appendChild(closeButton);
-        titleBar.appendChild(buttonGroup);
-        
-        this.contentEl.appendChild(titleBar);
-        
-        const outputEl = document.createElement('pre');
-        outputEl.className = 'python-output';
-        const codeEl = document.createElement('code');
-        codeEl.textContent = this.content;
-        outputEl.appendChild(codeEl);
-        this.contentEl.appendChild(outputEl);
-        
-        this.makeDraggable(this.modal, titleBar);
-        
-        const rect = this.modal.getBoundingClientRect();
-        this.modal.style.top = `${(window.innerHeight - rect.height) / 2}px`;
-        this.modal.style.left = `${(window.innerWidth - rect.width) / 2}px`;
-    }
-
-    setContent(content) {
-        this.content = content;
-        const codeEl = this.contentEl.querySelector('pre code');
-        if (codeEl) {
-            codeEl.textContent = content;
-        }
-    }
-
-    makeDraggable(modalEl, titleBar) {
-        let pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
-        titleBar.style.cursor = 'move';
-
-        titleBar.onmousedown = dragMouseDown;
-
-        function dragMouseDown(e) {
-            e.preventDefault();
-            pos3 = e.clientX;
-            pos4 = e.clientY;
-            document.onmouseup = closeDragElement;
-            document.onmousemove = elementDrag;
-        }
-
-        function elementDrag(e) {
-            e.preventDefault();
-            pos1 = pos3 - e.clientX;
-            pos2 = pos4 - e.clientY;
-            pos3 = e.clientX;
-            pos4 = e.clientY;
-            modalEl.style.top = (modalEl.offsetTop - pos2) + "px";
-            modalEl.style.left = (modalEl.offsetLeft - pos1) + "px";
-        }
-
-        function closeDragElement() {
-            document.onmouseup = null;
-            document.onmousemove = null;
-        }
-    }
-}
+const execFileAsync = promisify(execFile);
 
 const DEFAULT_SETTINGS = {
     pythonPath: 'python'
 };
 
+/**
+ * 使用 Obsidian 原生 Modal 展示运行结果，确保主题适配和键盘操作正常。
+ */
+class PythonOutputModal extends Modal {
+    constructor(app) {
+        super(app);
+        this.output = '正在运行…';
+        this.outputEl = null;
+    }
+
+    onOpen() {
+        const { contentEl } = this;
+        contentEl.addClass('yuhanbo-python-runner-modal');
+
+        const header = contentEl.createDiv({ cls: 'yuhanbo-python-runner-modal__header' });
+        header.createEl('h2', { text: 'Python 执行结果' });
+
+        const copyButton = header.createEl('button', { text: '复制结果' });
+        copyButton.addEventListener('click', async () => {
+            try {
+                await navigator.clipboard.writeText(this.output);
+                copyButton.setText('已复制');
+                window.setTimeout(() => copyButton.setText('复制结果'), 2000);
+            } catch (error) {
+                new Notice(`复制失败：${getErrorMessage(error)}`);
+            }
+        });
+
+        const outputContainer = contentEl.createEl('pre', {
+            cls: 'yuhanbo-python-runner-output'
+        });
+        this.outputEl = outputContainer.createEl('code', { text: this.output });
+    }
+
+    onClose() {
+        this.contentEl.empty();
+        this.outputEl = null;
+    }
+
+    setOutput(output) {
+        this.output = output;
+        this.outputEl?.setText(output);
+    }
+}
+
 class PythonRunnerPlugin extends Plugin {
     async onload() {
         await this.loadSettings();
-        
         this.addSettingTab(new PythonRunnerSettingTab(this.app, this));
-        
-        this.registerMarkdownCodeBlockProcessor('python', (source, el, ctx) => {
-            const wrapper = el.createDiv({ cls: 'python-code-wrapper' });
-            const pre = wrapper.createEl('pre');
-            pre.createEl('code', { text: source });
-            
+
+        this.registerMarkdownCodeBlockProcessor('python', (source, el) => {
+            const wrapper = el.createDiv({ cls: 'yuhanbo-python-runner-code' });
+            wrapper.createEl('pre').createEl('code', { text: source });
+
             const runButton = wrapper.createEl('button', {
-                text: '运行',
-                cls: 'python-run-button'
+                text: '运行 Python',
+                cls: 'yuhanbo-python-runner-code__run'
             });
-            
+
             runButton.addEventListener('click', async () => {
-                const execWindow = new ExecWindow(this.app);
-                execWindow.open();
+                runButton.disabled = true;
+                const outputModal = new PythonOutputModal(this.app);
+                outputModal.open();
+
                 try {
-                    const result = await this.executePythonCode(source);
-                    execWindow.setContent(result);
+                    outputModal.setOutput(await this.executePythonCode(source));
                 } catch (error) {
-                    execWindow.setContent(error.toString());
+                    outputModal.setOutput(`执行错误：${getErrorMessage(error)}`);
+                } finally {
+                    runButton.disabled = false;
                 }
             });
         });
     }
-    
+
+    /**
+     * 将代码写入系统临时目录，并直接调用解释器而不经过 shell。
+     * execFile 会把解释器路径和脚本参数分开传递，可避免路径被解释成命令。
+     */
     async executePythonCode(code) {
-        const { exec } = require('child_process');
-        const { promisify } = require('util');
-        const fs = require('fs');
-        const path = require('path');
-        const os = require('os');
-        const execAsync = promisify(exec);
-        
-        const tmpFile = path.join(os.tmpdir(), `obsidian-python-${Date.now()}.py`);
-        
+        const temporaryDirectory = await fs.mkdtemp(
+            path.join(os.tmpdir(), 'yuhanbo-python-runner-')
+        );
+        const temporaryScript = path.join(temporaryDirectory, 'script.py');
+
         try {
-            fs.writeFileSync(tmpFile, code, { encoding: 'utf8' });
-            
-            const setEncoding = process.platform === 'win32' ? 'chcp 65001 > nul && ' : '';
-            
-            const command = `${setEncoding}"${this.settings.pythonPath}" -u "${tmpFile}"`;
-            const { stdout, stderr } = await execAsync(command, {
-                timeout: 30000,
-                encoding: 'utf8',
-                env: {
-                    ...process.env,
-                    PYTHONIOENCODING: 'utf-8'
+            await fs.writeFile(temporaryScript, code, 'utf8');
+
+            const { stdout, stderr } = await execFileAsync(
+                this.settings.pythonPath.trim() || DEFAULT_SETTINGS.pythonPath,
+                ['-u', temporaryScript],
+                {
+                    encoding: 'utf8',
+                    env: {
+                        ...process.env,
+                        PYTHONIOENCODING: 'utf-8',
+                        PYTHONUTF8: '1'
+                    },
+                    maxBuffer: 10 * 1024 * 1024,
+                    timeout: 30000,
+                    windowsHide: true
                 }
-            });
-            
-            return stdout || stderr || '代码执行完成，无输出';
+            );
+
+            const output = [stdout, stderr].filter(Boolean).join('\n');
+            return output || '代码执行完成，无输出。';
         } catch (error) {
-            return `执行错误：${error.message}`;
-        } finally {
-            try {
-                fs.unlinkSync(tmpFile);
-            } catch (e) {
-                console.error('清理临时文件失败:', e);
+            const capturedOutput = [error?.stdout, error?.stderr].filter(Boolean).join('\n');
+            if (capturedOutput) {
+                return `执行错误：${getErrorMessage(error)}\n\n${capturedOutput}`;
             }
+            return `执行错误：${getErrorMessage(error)}`;
+        } finally {
+            // 此目录由插件刚刚创建，仅用于本次执行，因此可以安全地整体清理。
+            await fs.rm(temporaryDirectory, { force: true, recursive: true }).catch(() => {});
         }
     }
-    
+
     async loadSettings() {
         this.settings = Object.assign({}, DEFAULT_SETTINGS, await this.loadData());
     }
-    
+
     async saveSettings() {
         await this.saveData(this.settings);
     }
@@ -204,22 +143,26 @@ class PythonRunnerSettingTab extends PluginSettingTab {
         super(app, plugin);
         this.plugin = plugin;
     }
-    
+
     display() {
         const { containerEl } = this;
         containerEl.empty();
-        
+
         new Setting(containerEl)
-            .setName('Python 路径')
-            .setDesc('设置 Python 解释器的路径')
-            .addText(text => text
-                .setPlaceholder('输入 Python 路径')
+            .setName('Python 解释器')
+            .setDesc('输入 Python 可执行文件名称或完整路径，例如 python 或 C:\\Python312\\python.exe。')
+            .addText((text) => text
+                .setPlaceholder('python')
                 .setValue(this.plugin.settings.pythonPath)
                 .onChange(async (value) => {
-                    this.plugin.settings.pythonPath = value;
+                    this.plugin.settings.pythonPath = value.trim();
                     await this.plugin.saveSettings();
                 }));
     }
 }
 
-module.exports = PythonRunnerPlugin; 
+function getErrorMessage(error) {
+    return error instanceof Error ? error.message : String(error);
+}
+
+module.exports = PythonRunnerPlugin;

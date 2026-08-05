@@ -1,0 +1,110 @@
+name: Auto release Obsidian plugin
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - main.js
+      - styles.css
+      - manifest.json
+      - package.json
+      - package-lock.json
+      - versions.json
+      - tests/runtime-smoke.cjs
+      - scripts/prepare-release.mjs
+      - .github/workflows/release.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  id-token: write
+  attestations: write
+
+concurrency:
+  group: obsidian-plugin-release
+  cancel-in-progress: false
+
+jobs:
+  release:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - name: Use Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: "24.x"
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Prepare release version
+        id: prepare
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          current_version="$(node -p "require('./manifest.json').version")"
+          if git show-ref --tags --verify --quiet "refs/tags/${current_version}" \
+            || gh release view "${current_version}" >/dev/null 2>&1; then
+            node scripts/prepare-release.mjs --bump-patch
+          else
+            node scripts/prepare-release.mjs --sync-manifest
+          fi
+          version="$(node -p "require('./manifest.json').version")"
+          echo "version=${version}" >> "$GITHUB_OUTPUT"
+
+      - name: Build and validate plugin
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm run build
+          npm test
+          git diff --check
+          test -s main.js
+          test -s manifest.json
+          test -s styles.css
+
+      - name: Commit synchronized version files
+        id: commit
+        shell: bash
+        run: |
+          set -euo pipefail
+          version="${{ steps.prepare.outputs.version }}"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add manifest.json package.json package-lock.json versions.json
+          if ! git diff --cached --quiet; then
+            git commit -m "chore: prepare release ${version} [skip release]"
+            git push origin HEAD:main
+          fi
+          echo "commit_sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+
+      - name: Create GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          version="${{ steps.prepare.outputs.version }}"
+          gh release create "${version}" \
+            main.js manifest.json styles.css \
+            --target "${{ steps.commit.outputs.commit_sha }}" \
+            --title "${version}" \
+            --generate-notes
+
+      - name: Attest release assets
+        uses: actions/attest-build-provenance@v4
+        with:
+          subject-path: |
+            main.js
+            manifest.json
+            styles.css

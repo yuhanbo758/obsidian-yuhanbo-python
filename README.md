@@ -1,146 +1,70 @@
-# obsidian-yuhanbo-python
-在obsidian上调用本地的python，实现在OB上运行python代码
+# Yuhanbo Python Runner
 
-## 简介
+Run Python code blocks with a local Python interpreter and view their output without leaving Obsidian.
 
-Obsidian Python Runner 是一个允许您在 Obsidian 笔记中直接运行 Python 代码的插件。它提供了一个简单的界面来执行 Python 代码并查看输出结果。
+## Features
 
-  
-## 功能特点
+- Adds a **Run Python** button to rendered `python` code blocks.
+- Displays standard output and errors in an Obsidian modal.
+- Copies execution results to the clipboard on request.
+- Supports a configurable Python executable path.
+- Stops executions that exceed 30 seconds.
 
-- 在 Obsidian 笔记中直接运行 Python 代码
+## Requirements
 
-- 可拖动的输出窗口
+- Obsidian 1.7.2 or later on desktop.
+- Python 3 installed locally.
 
-- 支持复制执行结果
+This plugin is desktop-only because it launches a local Python process. It does not work on Obsidian Mobile.
 
-- 可自定义 Python 解释器路径
+## Usage
 
-## 安装要求
+Create a fenced Python code block in a note:
 
-- Obsidian 版本 >= 0.15.0
+```python
+print("Hello from Python!")
+```
 
-- 系统中已安装 Python
+Open the note in Reading view, select **Run Python**, and review the output in the modal.
 
-## 使用方法
+If `python` is not available on your system path, open **Settings → Community plugins → Yuhanbo Python Runner** and enter the executable name or absolute path, such as `C:\Python312\python.exe`.
 
-### 1. 编写 Python 代码
+## Security and privacy
 
-在 Obsidian 笔记中，使用 Python 代码块来编写代码：
+> [!WARNING]
+> Python code has the same operating-system permissions as Obsidian. It can read, change, upload, or delete local data. Run code only from vaults and notes you trust. This plugin does not sandbox Python.
 
-    ```python
+For each run, the plugin writes the code to a uniquely created operating-system temporary directory, launches the configured interpreter without a command shell, and then removes the temporary directory on a best-effort basis.
 
-    print("Hello, World!")
+The plugin itself does not send telemetry, make network requests, or display advertisements. The configured interpreter path is stored locally in Obsidian's plugin data. Output is copied to the clipboard only when you select **Copy result**. Python code you run may perform its own network or file-system operations.
 
-    ```
+## Installation
 
-### 2. 运行代码
+Once approved, install the plugin from **Settings → Community plugins → Browse** and search for **Yuhanbo Python Runner**.
 
-- 在代码块下方会出现一个"运行"按钮
+For manual installation, download `main.js`, `manifest.json`, and `styles.css` from a GitHub release and place them in:
 
-- 点击按钮执行代码
+```text
+<vault>/.obsidian/plugins/yuhanbo-python-runner/
+```
 
-- 执行结果会在弹出窗口中显示
+Restart Obsidian and enable the plugin.
 
-### 3. 查看结果
+## Development and releases
 
-- 执行结果会在一个可拖动的模态窗口中显示
+`main.js` is the maintained plugin source and release artifact. Run the local syntax check with:
 
-- 可以使用窗口顶部的"复制"按钮复制输出内容
+```bash
+npm ci
+npm run build
+```
 
-- 点击关闭按钮或窗口外部区域可关闭结果窗口
+Changes to release-relevant files on `main` are validated by GitHub Actions. The workflow synchronizes versions, creates an exact `x.y.z` tag, and attaches the required Obsidian release assets.
 
-## 插件设置
+## Support
 
+Report bugs and request features through [GitHub Issues](https://github.com/yuhanbo758/obsidian-yuhanbo-python/issues).
 
-### Python 路径配置
+## License
 
-1. 进入 Obsidian 设置
-
-2. 找到"Python Runner"插件设置
-
-3. 在"Python 路径"输入框中设置 Python 解释器的路径
-
-   - Windows 默认值: `python`
-
-   - 如果 Python 未在环境变量中，需要输入完整路径，如：`C:\Python39\python.exe`
-
-  
-## 注意事项
-
-- 代码执行超时时间为 30 秒
-
-- 临时文件会在代码执行后自动清理
-
-- 确保系统编码设置正确，以支持中文输出
-
-- 建议使用 Python 3.x 版本
-
-## 常见问题
-
-
-### 1. Python 路径设置问题
-
-如果遇到"找不到 Python"的错误，请检查：
-
-- Python 是否正确安装
-
-- 环境变量是否正确设置
-
-- 插件设置中的 Python 路径是否正确
-
-
-### 2. 中文显示问题
-
-如果输出中文显示乱码：
-
-- 确保系统使用 UTF-8 编码
-
-- Windows 用户可能需要在命令行中执行 `chcp 65001`
-
-
-### 3. 执行超时
-
-- 如果代码执行时间过长，将在 30 秒后自动终止
-
-- 请优化代码执行效率或分段执行
-
-
-## 技术支持
-
-如果遇到问题，请：
-
-1. 检查 Python 安装和环境变量设置
-
-2. 查看控制台错误日志
-
-1. 提交 issue 到项目仓库
-
-
-
-## 下载链接：[obsidian-yuhanbo-python](https://kdy.sanrenjz.com/#s/_EANZqEQ)
-
-下载资源存放于自建站的对象存储中，规避爬虫等不必要的流量，需关注微信公众号获得提取码：余汉波-发送“资源下载”。
-
-受限于流量资费昂贵，早期可能不会提供大资源，需跳转到官网或第三方网盘下载。
-
-
-
-# 联系我们
-
-主站：[三人聚智-余汉波 - QMT量化、效率工具和财经知识的搬运工](https://www.sanrenjz.com/)
-
-程序小店（个人开发的所有程序，包括开源和不开源）：[首页 | 三人聚智-余汉波程序小店](https://jy.sanrenjz.com/)
-
-文档站点（财经、代码和库文档等）：[余汉波 文档 | 财经、python与效率工具的知识搬运工](https://wd.sanrenjz.com/)
-
-python 程序管理工具下载：[sanrenjz - 三人聚智-余汉波](https://www.sanrenjz.com/sanrenjz/)
-
-![三码合一](https://gdsx.sanrenjz.com/image/sanrenjz_yuhanbolh_yuhanbo758.png?imageSlim&t=1ab9b82c-e220-8022-beff-e265a194292a)
-
-![余汉波打赏码](https://gdsx.sanrenjz.com/PicGo/%E6%89%93%E8%B5%8F%E7%A0%81500.png)
-
-
-
-
-
+[Apache License 2.0](LICENSE)

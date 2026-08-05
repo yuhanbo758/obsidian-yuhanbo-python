@@ -1,17 +1,22 @@
 {
-  "name": "obsidian-python-runner",
+  "name": "yuhanbo-python-runner",
   "version": "1.0.0",
-  "description": "在 Obsidian 中运行 Python 代码",
+  "description": "Run Python code blocks from Obsidian with a local interpreter.",
   "main": "main.js",
+  "type": "commonjs",
   "scripts": {
-    "dev": "node esbuild.config.mjs",
-    "build": "node esbuild.config.mjs production"
+    "build": "node --check main.js",
+    "test": "node tests/runtime-smoke.cjs",
+    "version": "node scripts/prepare-release.mjs --from-package && git add manifest.json versions.json package-lock.json"
   },
-  "keywords": [],
-  "author": "",
-  "license": "MIT",
-  "devDependencies": {
-    "obsidian": "^0.12.0",
-    "esbuild": "0.13.12"
+  "keywords": [
+    "obsidian",
+    "python",
+    "code-runner"
+  ],
+  "author": "Yuhanbo Yu",
+  "license": "Apache-2.0",
+  "engines": {
+    "node": ">=20"
   }
-} 
+}
