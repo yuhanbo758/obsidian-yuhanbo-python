@@ -1,7 +1,7 @@
 {
   "id": "yuhanbo-python-runner",
   "name": "Yuhanbo Python Runner",
-  "version": "2.0.2",
+  "version": "2.0.3",
   "minAppVersion": "1.7.2",
   "description": "Run and schedule Python code blocks with a local interpreter and save their output.",
   "author": "余汉波",
