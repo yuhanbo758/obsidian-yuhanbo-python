@@ -2,3 +2,11 @@ node_modules/
 npm-debug.log*
 .DS_Store
 Thumbs.db
+data.json
+.obsidian/
+dist/
+.env
+.env.*
+!.env.example
+*.pem
+*.key

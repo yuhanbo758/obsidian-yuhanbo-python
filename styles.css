@@ -1,5 +1,4 @@
-.yuhanbo-python-runner-code {
-    position: relative;
+.python-code-wrapper {
     margin-block: var(--size-4-3);
     padding: var(--size-4-3);
     border: 1px solid var(--background-modifier-border);
@@ -7,36 +6,75 @@
     background: var(--background-secondary);
 }
 
-.yuhanbo-python-runner-code pre {
+.python-code-wrapper pre {
     margin: 0;
-    padding-block-end: var(--size-4-6);
     overflow-x: auto;
 }
 
-.yuhanbo-python-runner-code__run {
-    position: absolute;
-    right: var(--size-4-2);
-    bottom: var(--size-4-2);
-}
-
-.yuhanbo-python-runner-modal__header {
+.python-code-wrapper .python-code-actions {
     display: flex;
-    gap: var(--size-4-3);
-    align-items: center;
-    justify-content: space-between;
+    justify-content: flex-end;
+    gap: var(--size-4-2);
+    margin-block-start: var(--size-4-2);
 }
 
-.yuhanbo-python-runner-modal__header h2 {
-    margin: 0;
+.python-code-wrapper .python-run-button {
+    background: var(--interactive-accent);
+    color: var(--text-on-accent);
 }
 
-.yuhanbo-python-runner-output {
+.python-runner-modal .python-drag-handle {
+    cursor: move;
+    touch-action: none;
+}
+
+.python-runner-modal .python-output {
     max-height: 60vh;
-    margin-block-start: var(--size-4-4);
     padding: var(--size-4-3);
     overflow: auto;
     border-radius: var(--radius-s);
     background: var(--background-secondary);
+    user-select: text;
     white-space: pre-wrap;
     overflow-wrap: anywhere;
+}
+
+.python-runner-modal .python-output code {
+    user-select: text;
+}
+
+.python-task-list .python-task-item {
+    border-bottom: 1px solid var(--background-modifier-border);
+}
+
+.python-task-form .setting-with-suggestions {
+    position: relative;
+}
+
+.python-task-form .suggestion-container {
+    position: absolute;
+    inset-inline-end: 0;
+    width: min(300px, 100%);
+    max-height: 200px;
+    overflow-y: auto;
+    border: 1px solid var(--background-modifier-border);
+    border-radius: var(--radius-m);
+    background: var(--background-primary);
+    box-shadow: var(--shadow-s);
+    z-index: 1;
+}
+
+.python-task-form .suggestion-item {
+    padding: var(--size-4-2) var(--size-4-3);
+    cursor: pointer;
+}
+
+.python-task-form .suggestion-item:hover,
+.python-task-form .suggestion-item.is-selected {
+    background: var(--interactive-accent);
+    color: var(--text-on-accent);
+}
+
+.python-task-form .modal-error-message {
+    color: var(--text-error);
 }

@@ -1,9 +1,9 @@
 {
   "id": "yuhanbo-python-runner",
   "name": "Yuhanbo Python Runner",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "minAppVersion": "1.7.2",
-  "description": "Run Python code blocks with a local interpreter and view their output inside your notes.",
+  "description": "Run and schedule Python code blocks with a local interpreter in Obsidian.",
   "author": "Yuhanbo Yu",
   "authorUrl": "https://github.com/yuhanbo758",
   "isDesktopOnly": true

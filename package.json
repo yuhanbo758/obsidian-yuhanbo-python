@@ -1,12 +1,12 @@
 {
   "name": "yuhanbo-python-runner",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "Run Python code blocks from Obsidian with a local interpreter.",
   "main": "main.js",
   "type": "commonjs",
   "scripts": {
     "build": "node --check main.js",
-    "test": "node tests/runtime-smoke.cjs",
+    "test": "node --test tests/runtime-smoke.cjs tests/regression.cjs",
     "version": "node scripts/prepare-release.mjs --from-package && git add manifest.json versions.json package-lock.json"
   },
   "keywords": [
