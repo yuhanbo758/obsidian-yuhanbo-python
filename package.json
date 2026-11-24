@@ -14,7 +14,7 @@
     "python",
     "code-runner"
   ],
-  "author": "Yuhanbo Yu",
+  "author": "余汉波",
   "license": "Apache-2.0",
   "engines": {
     "node": ">=20"

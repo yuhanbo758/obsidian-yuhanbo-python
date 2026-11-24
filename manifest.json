@@ -4,7 +4,7 @@
   "version": "2.0.2",
   "minAppVersion": "1.7.2",
   "description": "Run and schedule Python code blocks with a local interpreter and save their output.",
-  "author": "Yuhanbo Yu",
+  "author": "余汉波",
   "authorUrl": "https://github.com/yuhanbo758",
   "isDesktopOnly": true
 }
