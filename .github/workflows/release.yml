@@ -12,6 +12,8 @@ on:
       - package-lock.json
       - versions.json
       - tests/**
+      - src/**
+      - scripts/build.mjs
       - scripts/prepare-release.mjs
       - .github/workflows/release.yml
   workflow_dispatch:
@@ -75,6 +77,7 @@ jobs:
           npm test
           git diff --check
           test -s main.js
+          cmp -s src/plugin.js main.js
           test -s manifest.json
           test -s styles.css
 

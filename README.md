@@ -60,7 +60,7 @@ Reload Obsidian and enable the plugin. For an older manually installed build tha
 
 ## Development and releases
 
-`main.js` is the maintained plugin source and release artifact. Run the local syntax check with:
+The maintained plugin source is `src/plugin.js`. The build checks the source and emits `main.js` as the release artifact:
 
 ```bash
 npm ci

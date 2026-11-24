@@ -5,6 +5,7 @@ Thumbs.db
 data.json
 .obsidian/
 dist/
+/main.js
 .env
 .env.*
 !.env.example
